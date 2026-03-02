@@ -1,5 +1,5 @@
 import codeLogo from '../../../assets/Code.svg'
-// import githubLogo from '../../../assets/Github.svg'
+import githubLogo from '../../../assets/Github.svg'
 import './header.css'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -37,7 +37,7 @@ export default function Header() {
                             rel='noopener noreferrer'
                             className='nav-link-header'
                         >
-                            {/* Github logo doesnt display
+                            {link.name}
                             {link.name === 'GitHub' && (
                                 <img
                                     src={githubLogo}
@@ -45,9 +45,6 @@ export default function Header() {
                                     className='header-github-logo'
                                 />
                             )}
-                            */}
-                            {link.name}
-                            
                         </a>
                     ) : (
                         <Link key={link.name} to={link.path} className='nav-link-header'>
