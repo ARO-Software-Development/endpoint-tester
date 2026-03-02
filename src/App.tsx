@@ -3,6 +3,7 @@ import Home from './views/Home/Home'
 import Error from './views/Error/Error'
 import Header from './components/layout/header/header'
 import './App.css'
+import Footer from './components/layout/footer/footer'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         {/*<Route path='/docs' element={<Documentation />} />*/}
         <Route path='*' element={<Error />} />
       </Routes>
+      <Footer />
     </>
   )
 }
