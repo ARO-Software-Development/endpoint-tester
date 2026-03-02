@@ -1,4 +1,62 @@
-.title {
-    font-size: 2em;
-    color: #61dafb;
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 5em;
+    width: 100%;
+    padding: 0 32px;
+    background: #131414;
+    color: #e3e3e3;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.left-header {
+    display: flex;
+    align-items: center;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    margin-right: 16px;
+}
+
+.header-logo {
+    height: 3.5em;
+    width: auto;
+    object-fit: contain;
+}
+
+.header-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-left: 1em;
+}
+
+.nav-header {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link-header {
+    color: #e3e3e3;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.nav-link-header:hover {
+    color: #2F86D8;
+}
+
+.header-github-logo {
+  height: 1em;
+  width: 1em;
+  margin-right: 0.5em;
+  vertical-align: middle;
+  display: inline-block;
+  filter: invert(1); /* converts black → white */
 }
