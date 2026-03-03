@@ -45,14 +45,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
-  width: 100%;
+  height: 35rem;
+  width: auto;
 }
 
 img.logo {
   height: 35rem;
   width: auto;
-  padding-top: 5rem;
   text-shadow: black 0px 0px 20px;
 }
 

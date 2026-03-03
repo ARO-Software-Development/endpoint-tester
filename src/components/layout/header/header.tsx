@@ -1,4 +1,4 @@
-import codeLogo from '../../../assets/Code.svg'
+import codeLogo from '../../../assets/ARO.svg'
 import githubLogo from '../../../assets/Github.svg'
 import './header.css'
 import { Link, useLocation } from 'react-router-dom'
