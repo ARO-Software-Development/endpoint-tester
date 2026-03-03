@@ -1,4 +1,4 @@
-# ARO Endpoint Tester
+# DARO Endpoint Tester
 
 A lightweight, browser-based API client (inspired by Postman) for testing RESTful endpoints. Built with speed and simplicity in mind using **Vite** and **pnpm**.
 
