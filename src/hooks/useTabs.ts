@@ -1,71 +1,66 @@
-import { useState, useEffect } from 'react'
-import {
-  type Tab,
-  getTabs,
-  saveTabs,
-  generateId
-} from '../utils/storage'
+import { useState, useEffect } from "react";
+import { type Tab, getTabs, saveTabs, generateId } from "../utils/storage";
 
 function createDefaultTab(): Tab {
   return {
     id: generateId(),
-    label: 'New Tab',
-    method: 'GET',
-    url: '',
+    label: "New Tab",
+    method: "GET",
+    url: "",
     headers: [],
-    body: ''
-  }
+    body: "",
+  };
 }
 
 export function useTabs() {
   const [tabs, setTabs] = useState<Tab[]>(() => {
-    const saved = getTabs()
-    return saved.length > 0 ? saved : [createDefaultTab()]
-  })
+    const saved = getTabs();
+    return saved.length > 0 ? saved : [createDefaultTab()];
+  });
 
   const [activeTabId, setActiveTabId] = useState<string>(() => {
-    const saved = getTabs()
-    return saved.length > 0 ? saved[0].id : ''
-  })
+    const saved = getTabs();
+    return saved.length > 0 ? saved[0].id : "";
+  });
 
   useEffect(() => {
-    saveTabs(tabs)
-  }, [tabs])
+    saveTabs(tabs);
+  }, [tabs]);
 
   function createTab(): void {
-    const newTab = createDefaultTab()
-    setTabs(prev => [...prev, newTab])
-    setActiveTabId(newTab.id)
+    const newTab = createDefaultTab();
+    setTabs((prev) => [...prev, newTab]);
+    setActiveTabId(newTab.id);
   }
 
   function closeTab(id: string): void {
-    setTabs(prev => {
+    setTabs((prev) => {
       if (prev.length === 1) {
-        const replacement = createDefaultTab()
-        setActiveTabId(replacement.id)
-        return [replacement]
+        const replacement = createDefaultTab();
+        setActiveTabId(replacement.id);
+        return [replacement];
       }
 
-      const index = prev.findIndex(t => t.id === id)
-      const next = prev.filter(t => t.id !== id)
+      const index = prev.findIndex((t) => t.id === id);
+      const next = prev.filter((t) => t.id !== id);
 
       if (id === activeTabId) {
-        const newActive = next[Math.max(0, index - 1)]
-        setActiveTabId(newActive.id)
+        const newActive = next[Math.max(0, index - 1)];
+        setActiveTabId(newActive.id);
       }
 
-      return next
-    })
+      return next;
+    });
   }
 
   function updateTab(id: string, changes: Partial<Tab>): void {
-    setTabs(prev =>
-      prev.map(tab => tab.id === id ? { ...tab, ...changes } : tab)
-    )
+    setTabs((prev) =>
+      prev.map((tab) => (tab.id === id ? { ...tab, ...changes } : tab)),
+    );
   }
 
   function getActiveTab(): Tab | undefined {
-    return tabs.find(t => t.id === activeTabId)
+    return tabs.find((t) => t.id === activeTabId);
   }
 
   return {
@@ -75,6 +70,6 @@ export function useTabs() {
     createTab,
     closeTab,
     updateTab,
-    getActiveTab
-  }
+    getActiveTab,
+  };
 }

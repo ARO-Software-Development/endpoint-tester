@@ -2,8 +2,6 @@ import { useState } from "react";
 import {
   type HistoryEntry,
   type HttpMethod,
-  getHistory,
-  saveHistory,
   generateId,
 } from "../utils/storage";
 
@@ -55,6 +53,7 @@ export function useRequest() {
   }
 
   function logToHistory(
+    addEntry: (entry: HistoryEntry) => void,
     tabId: string,
     method: HttpMethod,
     url: string,
@@ -74,8 +73,7 @@ export function useRequest() {
       responseStatus,
       responseTime,
     };
-    const current = getHistory();
-    saveHistory([newEntry, ...current]);
+    addEntry(newEntry);
   }
 
   async function executeRequest(
@@ -84,6 +82,7 @@ export function useRequest() {
     url: string,
     headers: { key: string; value: string }[],
     body: string,
+    addEntry: (entry: HistoryEntry) => void,
   ): Promise<void> {
     setIsLoading(true);
     setError(null);
@@ -92,49 +91,58 @@ export function useRequest() {
     const startTime = performance.now();
 
     try {
-        const header = buildHeaders(headers);
-        const options: RequestInit = {
-            method,
-            headers: header,
-        }
-        if (['POST', 'PUT', 'PATCH'].includes(method) && body.trim() !== '') {
-            options.body = body;
-        }
+      const header = buildHeaders(headers);
+      const options: RequestInit = {
+        method,
+        headers: header,
+      };
+      if (["POST", "PUT", "PATCH"].includes(method) && body.trim() !== "") {
+        options.body = body;
+      }
 
-        const res = await fetch(url, options);
-        const responseTime = performance.now() - startTime;
-        const responseData = await parseResponseBody(res);
-        const parseHeaders = parseResponseHeaders(res.headers);
+      const res = await fetch(url, options);
+      const responseTime = performance.now() - startTime;
+      const responseData = await parseResponseBody(res);
+      const parseHeaders = parseResponseHeaders(res.headers);
 
-        const result: RequestResponse = {
-            status: res.status,
-            statusText: res.statusText,
-            responseTime,
-            data: responseData,
-            headers: parseHeaders,
-            isError: false,
-        }
+      setResponse({
+        status: res.status,
+        statusText: res.statusText,
+        responseTime,
+        data: responseData,
+        headers: parseHeaders,
+        isError: false,
+      });
 
-        setResponse(result);
-        logToHistory(tabId, method, url, headers, body, res.status, responseTime);
+      logToHistory(
+        addEntry,
+        tabId,
+        method,
+        url,
+        headers,
+        body,
+        res.status,
+        responseTime,
+      );
     } catch (error) {
-        const responseTime = performance.now() - startTime;
-        const errorMessage = error instanceof Error ? error.message : 'Unkown error occurred';
+      const responseTime = performance.now() - startTime;
+      const errorMessage =
+        error instanceof Error ? error.message : "Unkown error occurred";
 
-        setError(errorMessage);
-        setResponse({
-            status: 0,
-            statusText: 'Network Error',
-            responseTime,
-            data: null,
-            headers: {},
-            isError: true,
-            errorMessage,
-        });
+      setError(errorMessage);
+      setResponse({
+        status: 0,
+        statusText: "Network Error",
+        responseTime,
+        data: null,
+        headers: {},
+        isError: true,
+        errorMessage,
+      });
 
-        logToHistory(tabId, method, url, headers, body, 0, responseTime);
+      logToHistory(addEntry, tabId, method, url, headers, body, 0, responseTime);
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   }
 
@@ -149,5 +157,5 @@ export function useRequest() {
     error,
     executeRequest,
     clearResponse,
-  }
+  };
 }
