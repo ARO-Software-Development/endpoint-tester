@@ -1,5 +1,3 @@
-// /src/hooks/useTabs.ts
-
 import { useState, useEffect } from 'react'
 import {
   type Tab,

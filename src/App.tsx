@@ -9,16 +9,18 @@ import './App.css'
 
 function App() {
   return (
-    <>
+    <div className="app-container">
       <Header />
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/tester' element={<Tester />} />
-        <Route path='/docs' element={<Documentation />} />
-        <Route path='*' element={<Error />} />
-      </Routes>
+      <div className="app-main">
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/tester' element={<Tester />} />
+          <Route path='/docs' element={<Documentation />} />
+          <Route path='*' element={<Error />} />
+        </Routes>
+      </div>
       <Footer />
-    </>
+    </div>
   )
 }
 
