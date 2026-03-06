@@ -1,35 +1,38 @@
-export type HttpMethod = "GET" | "POST";
-//    | 'PUT'
-//    | 'DELETE'
-//    | 'PATCH'
+export type HttpMethod = 
+    | 'GET'
+    | 'POST'
+    | 'PUT'
+    | 'DELETE'
+    | 'PATCH'
+    | 'ERROR';
 
 export type StatusCategories =
-  | "success"
-  | "redirect"
-  | "client-error"
-  | "server-error"
-  | "network-error";
+  | 'success'
+  | 'redirect'
+  | 'client-error'
+  | 'server-error'
+  | 'network-error';
 
 export const STATUS_LABELS: Record<number, string> = {
-  200: "OK",
-  201: "CREATED",
-  202: "ACCEPTED",
-  204: "NO CONTENT",
-  301: "MOVED PERMANENTLY",
-  302: "FOUND",
-  304: "NOT MODIFIED",
-  400: "BAD REQUEST",
-  401: "UNAUTHORIZED",
-  403: "FORBIDDEN",
-  404: "NOT FOUND",
-  405: "METHOD NOT ALLOWED",
-  409: "CONFLICT",
-  422: "UNPROCESSABLE ENTITY",
-  429: "TOO MANY REQUESTS",
-  500: "INTERNAL SERVER ERROR",
-  502: "BAD GATEWAY",
-  503: "SERVICE UNAVAILABLE",
-  504: "GATEWAY TIMEOUT",
+  200: 'OK',
+  201: 'CREATED',
+  202: 'ACCEPTED',
+  204: 'NO CONTENT',
+  301: 'MOVED PERMANENTLY',
+  302: 'FOUND',
+  304: 'NOT MODIFIED',
+  400: 'BAD REQUEST',
+  401: 'UNAUTHORIZED',
+  403: 'FORBIDDEN',
+  404: 'NOT FOUND',
+  405: 'METHOD NOT ALLOWED',
+  409: 'CONFLICT',
+  422: 'UNPROCESSABLE ENTITY',
+  429: 'TOO MANY REQUESTS',
+  500: 'INTERNAL SERVER ERROR',
+  502: 'BAD GATEWAY',
+  503: 'SERVICE UNAVAILABLE',
+  504: 'GATEWAY TIMEOUT',
 };
 
 export type Tab = {
@@ -53,8 +56,8 @@ export type HistoryEntry = {
   responseTime: number;
 };
 
-const TABS_KEY = "daro_tabs";
-const HISTORY_KEY = "daro_history";
+const TABS_KEY = 'daro_tabs';
+const HISTORY_KEY = 'daro_history';
 const MAX_HISTORY = 5; // Limited for testing, real value set to 100-200
 
 export function generateId(): string {
@@ -88,7 +91,7 @@ export function saveHistory(entries: HistoryEntry[]): void {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(pruned));
   } catch (error) {
     console.warn(
-      "localStorage is full, clearing history to free up space",
+      'localStorage is full, clearing history to free up space',
       error,
     );
     const trimmed = entries.slice(0, MAX_HISTORY);
@@ -98,4 +101,16 @@ export function saveHistory(entries: HistoryEntry[]): void {
 
 export function getStatusLabel(status: number): string {
   return STATUS_LABELS[status] || status.toString();
+}
+
+export function getMethodColor(method: HttpMethod): string {
+  const color: Record<HttpMethod, string> = {
+    GET: '#4CAF50',
+    POST: '#2196F3',
+    PUT: '#FFC107',
+    DELETE: '#F44336',
+    PATCH: '#9C27B0',
+    ERROR: '#000000',
+  };
+  return color[method] ?? '#8b8b8b';
 }

@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
-import { type Tab, getTabs, saveTabs, generateId } from "../utils/storage";
+import { useState, useEffect } from 'react';
+import { type Tab, getTabs, saveTabs, generateId } from '../utils/storage';
 
 function createDefaultTab(): Tab {
   return {
     id: generateId(),
-    label: "New Tab",
-    method: "GET",
-    url: "",
+    label: 'New Tab',
+    method: 'GET',
+    url: '',
     headers: [],
-    body: "",
+    body: '',
   };
 }
 
@@ -20,7 +20,7 @@ export function useTabs() {
 
   const [activeTabId, setActiveTabId] = useState<string>(() => {
     const saved = getTabs();
-    return saved.length > 0 ? saved[0].id : "";
+    return saved.length > 0 ? saved[0].id : '';
   });
 
   useEffect(() => {

@@ -26,7 +26,7 @@ export default function Footer() {
     }, []);
 
     return (
-        <footer className="footer">
+        <footer className='footer'>
             <span className={`footer-message ${fade ? 'fade-in' : 'fade-out'}`}>{messages[index]}</span>
         </footer>
     )

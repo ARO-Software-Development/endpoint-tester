@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   type HistoryEntry,
   type HttpMethod,
   generateId,
-} from "../utils/storage";
+} from '../utils/storage';
 
 export type RequestResponse = {
   status: number;
@@ -29,8 +29,8 @@ export function useRequest() {
   }
 
   async function parseResponseBody(res: Response): Promise<unknown> {
-    const contentType = res.headers.get("content-type") ?? "";
-    if (contentType.includes("application/json")) {
+    const contentType = res.headers.get('content-type') ?? '';
+    if (contentType.includes('application/json')) {
       try {
         return await res.json();
       } catch {
@@ -45,7 +45,7 @@ export function useRequest() {
   ): Record<string, string> {
     const result: Record<string, string> = {};
     headers.forEach(({ key, value }) => {
-      if (key.trim() !== "") {
+      if (key.trim() !== '') {
         result[key.trim()] = value.trim();
       }
     });
@@ -96,7 +96,7 @@ export function useRequest() {
         method,
         headers: header,
       };
-      if (["POST", "PUT", "PATCH"].includes(method) && body.trim() !== "") {
+      if (['POST', 'PUT', 'PATCH'].includes(method) && body.trim() !== '') {
         options.body = body;
       }
 
@@ -127,12 +127,12 @@ export function useRequest() {
     } catch (error) {
       const responseTime = performance.now() - startTime;
       const errorMessage =
-        error instanceof Error ? error.message : "Unkown error occurred";
+        error instanceof Error ? error.message : 'Unkown error occurred';
 
       setError(errorMessage);
       setResponse({
         status: 0,
-        statusText: "Network Error",
+        statusText: 'Network Error',
         responseTime,
         data: null,
         headers: {},

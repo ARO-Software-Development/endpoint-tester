@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   type HistoryEntry,
   type StatusCategories,
   type Tab,
   getHistory,
   saveHistory,
-} from "../utils/storage";
+} from '../utils/storage';
 
 export function useHistory() {
   const [history, setHistory] = useState<HistoryEntry[]>(() => {
@@ -36,7 +36,7 @@ export function useHistory() {
     setHistory((prev) => prev.filter((entry) => entry.id !== id));
   }
 
-  function replyRequest(
+  function replayRequest(
     entry: HistoryEntry,
     updateTab: (id: string, changes: Partial<Tab>) => void,
   ): void {
@@ -60,7 +60,7 @@ export function useHistory() {
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
 
-    if (diffMins < 1) return "Just now";
+    if (diffMins < 1) return 'Just now';
     if (diffMins < 60) return `${diffMins} minute(s) ago`;
     if (diffHours < 24) return `${diffHours} hour(s) ago`;
     if (diffDays < 7) return `${diffDays} day(s) ago`;
@@ -69,11 +69,11 @@ export function useHistory() {
   }
 
   function getStatusCategory(status: number): StatusCategories {
-    if (status === 0) return "network-error";
-    if (status < 300) return "success";
-    if (status < 400) return "redirect";
-    if (status < 500) return "client-error";
-    return "server-error";
+    if (status === 0) return 'network-error';
+    if (status < 300) return 'success';
+    if (status < 400) return 'redirect';
+    if (status < 500) return 'client-error';
+    return 'server-error';
   }
 
   return {
@@ -83,7 +83,7 @@ export function useHistory() {
     clearHistoryByTab,
     getHistoryByTab,
     deleteEntry,
-    replyRequest,
+    replayRequest,
     getRecentHistory,
     formatTimestamp,
     getStatusCategory,
