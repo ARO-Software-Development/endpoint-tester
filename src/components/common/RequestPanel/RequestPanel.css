@@ -1,0 +1,214 @@
+/* ─── Request panel ───────────────────────────────────── */
+.request-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+  padding: 1em;
+  flex: 1;
+}
+
+.request-top-row {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.method-select {
+  background: #1e1e1e;
+  color: #e3e3e3;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  padding: 0.5em 0.75em;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease;
+  min-width: 100px;
+}
+
+.method-select:focus {
+  border-color: #2F86D8;
+}
+
+.url-input {
+  flex: 1;
+  min-width: 200px;
+  background: #1e1e1e;
+  color: #e3e3e3;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  padding: 0.5em 0.75em;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+  font-family: monospace;
+}
+
+.url-input:focus {
+  border-color: #2F86D8;
+}
+
+.url-input::placeholder {
+  color: #555;
+}
+
+.send-btn {
+  background: #2F86D8;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5em 1.5em;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.send-btn:hover {
+  background: #2272be;
+}
+
+.send-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.send-btn.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.history-toggle-btn {
+  display: none; /* Hidden because sidebar is always visible as aside */
+}
+
+/* ─── Request tabs (Headers / Body) ───────────────────── */
+.request-tabs {
+  display: flex;
+  gap: 0.25em;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.request-tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #8b8b8b;
+  cursor: pointer;
+  padding: 0.4em 0.75em;
+  font-size: 0.85rem;
+  transition: color 0.2s ease, border-color 0.2s ease;
+  border-radius: 0;
+  margin-bottom: -1px;
+}
+
+.request-tab-btn:hover {
+  color: #e3e3e3;
+  border-color: transparent;
+}
+
+.request-tab-btn.active {
+  color: #2F86D8;
+  border-bottom-color: #2F86D8;
+}
+
+/* ─── Headers editor ──────────────────────────────────── */
+.headers-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+}
+
+.header-row {
+  display: flex;
+  gap: 0.4em;
+  align-items: center;
+}
+
+.header-input {
+  flex: 1;
+  background: #1e1e1e;
+  color: #e3e3e3;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  padding: 0.35em 0.6em;
+  font-size: 0.8rem;
+  font-family: monospace;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.header-input:focus {
+  border-color: #2F86D8;
+}
+
+.header-input::placeholder {
+  color: #555;
+}
+
+.header-remove-btn {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  transition: color 0.2s ease;
+}
+
+.header-remove-btn:hover {
+  color: #e05555;
+  border-color: transparent;
+}
+
+.add-header-btn {
+  align-self: flex-start;
+  background: none;
+  border: 1px dashed #2a2a2a;
+  color: #8b8b8b;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0.3em 0.75em;
+  border-radius: 4px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.add-header-btn:hover {
+  color: #2F86D8;
+  border-color: #2F86D8;
+}
+
+/* ─── Body editor ─────────────────────────────────────── */
+.body-editor {
+  width: 100%;
+  background: #1e1e1e;
+  color: #e3e3e3;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  padding: 0.6em 0.75em;
+  font-size: 0.85rem;
+  font-family: monospace;
+  resize: vertical;
+  min-height: 80px;
+  outline: none;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.body-editor:focus {
+  border-color: #2F86D8;
+}
+
+.body-editor::placeholder {
+  color: #555;
+}
+
+@media (max-width: 768px) {
+  .request-panel {
+    border-bottom: 1px solid #2a2a2a;
+  }
+}
