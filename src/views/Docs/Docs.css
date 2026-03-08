@@ -2,10 +2,10 @@
   display: flex;
   justify-content: center;
   align-items: flex-start; 
-  width: 100vw;
+  width: 100%;
   
   /* 1. Force the container to take up a specific height */
-  height: calc(100vh - 80px); /* Adjust '80px' based on your Navbar height */
+  height: calc(100vh - 5em - 3.5em); 
   
   /* 2. Force the scrollbar to appear inside this container */
   overflow-y: scroll; 

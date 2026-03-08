@@ -1,12 +1,7 @@
-import { type HttpMethod, getMethodColor } from '../../../utils/storage';
+import { toast } from 'sonner';
+import { getMethodColor } from '../../../utils/storage';
 import './TabBar.css';
-
-interface Tab {
-  id: string;
-  label: string;
-  method: HttpMethod;
-  url: string;
-}
+import { type Tab } from '../../../utils/storage';
 
 interface TabBarProps {
   tabs: Tab[];
@@ -23,6 +18,33 @@ export default function TabBar({
   onCloseTab,
   onCreateTab,
 }: TabBarProps) {
+  
+  function tabHasContent(tab: Tab): boolean {
+    return (
+      tab.url.trim() !== '' ||
+      tab.body.trim() !== '' ||
+      tab.headers.some(h => h.key.trim() !== '')
+    );
+  }
+
+  function handleCloseTab(id: string, e: React.MouseEvent<HTMLButtonElement>): void {
+    e.stopPropagation();
+    const tab = tabs.find(t => t.id === id);
+    if (!tab) return;
+
+    if (tabHasContent(tab)) {
+      toast.warning('Discard unsaved changes?', {
+        description: 'This tab has unsaved content. Are you sure you want to close it?',
+        action: {
+          label: 'Close Tab',
+          onClick: () => onCloseTab(id),
+        },
+      });
+    } else {
+      onCloseTab(id);
+    }
+  }
+
   return (
     <div className='tab-bar'>
       {tabs.map((tab) => (
@@ -42,10 +64,7 @@ export default function TabBar({
           </span>
           <button
             className='tab-close'
-            onClick={(event) => {
-              event.stopPropagation();
-              onCloseTab(tab.id);
-            }}
+            onClick={(event) => handleCloseTab(tab.id, event)}
             title='Close Tab'
           >
             ×

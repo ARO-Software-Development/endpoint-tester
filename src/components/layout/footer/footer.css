@@ -1,16 +1,12 @@
 .footer {
-    width: 100vw;
     background: #131414;
     color: #e3e3e3;
     text-align: center;
     padding: 1em 0;
-    position: fixed;
-    bottom: 0;
-    left: 0;
     z-index: 100;
     font-size: 1rem;
     letter-spacing: 0.02em;
-    box-shadow: black 0px -10px 50px;
+    box-shadow: black 0px -5px 10px;
 }
 
 span:hover {

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { useTabs, useHistory, useRequest } from '../../hooks';
 import TabBar from '../../components/common/TabBar/TabBar';
 import HistorySidebar from '../../components/common/HistorySidebar/HistorySidebar';
@@ -34,8 +35,25 @@ export default function Tester() {
   const activeTab = getActiveTab();
   const tabHistory = activeTab ? getHistoryByTab(activeTab.id) : [];
 
+  function validateUrl(url: string): boolean {
+    try {
+      const parsed = new URL(url);
+      return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  }
+
   function handleSend(): void {
     if (!activeTab || !activeTab.url.trim()) return;
+    
+    if (!validateUrl(activeTab.url.trim())) {
+      toast.error('Invalid URL', {
+        description: 'Please enter a valid URL (must start with http:// or https://)',
+      });
+      return;
+    }
+
     executeRequest(
       activeTab.id,
       activeTab.method,
@@ -68,9 +86,16 @@ export default function Tester() {
   }
 
   function handleClearHistory(): void {
-    if (window.confirm('Clear all history? This cannot be undone.')) {
-      clearHistory();
-    }
+    toast.warning('Are you sure you want to clear all history?', {
+      description: 'This action cannot be undone.',
+      action: {
+        label: 'Clear',
+        onClick: () => {
+          clearHistory();
+          toast.success('History cleared successfully');
+        },
+      },
+    });
   }
 
   return (

@@ -207,6 +207,12 @@
   color: #555;
 }
 
+.url-error-message {
+  font-size: 0.75rem;
+  color: #f44336;
+  padding-left: 0.25em;
+}
+
 @media (max-width: 768px) {
   .request-panel {
     border-bottom: 1px solid #2a2a2a;

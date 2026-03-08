@@ -59,3 +59,44 @@ p {
   display: flex;
   flex-direction: column;
 }
+
+/* Custom Toast Button Styling */
+.daro-toast {
+  border: 1px solid #2a2a2a !important; /* Default border */
+}
+
+.daro-toast[data-type='success'] {
+  border-color: #4CAF50 !important;
+}
+
+.daro-toast[data-type='error'] {
+  border-color: #F44336 !important;
+}
+
+.daro-toast[data-type='warning'] {
+  border-color: #FFC107 !important;
+}
+
+.daro-toast[data-type='info'] {
+  border-color: #2F86D8 !important;
+}
+
+.daro-toast [data-button] {
+  background: #2F86D8 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 0.5rem 1rem !important;
+  transition: opacity 0.2s ease !important;
+}
+
+.daro-toast [data-button]:hover {
+  opacity: 0.9 !important;
+}
+
+.daro-toast [data-cancel] {
+  background: transparent !important;
+  color: #e3e3e3 !important;
+  border: 1px solid #2a2a2a !important;
+}

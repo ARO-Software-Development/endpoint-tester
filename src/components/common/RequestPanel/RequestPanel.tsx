@@ -84,7 +84,7 @@ export default function RequestPanel({
         <input
           type='text'
           className='url-input'
-          placeholder='https://api.example.com/endpoint'
+          placeholder='https://api.example.com/prefix/endpoint'
           value={activeTab?.url ?? ''}
           onChange={(e) => {
             if (!activeTab) return;
