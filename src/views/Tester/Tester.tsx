@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useTabs, useHistory, useRequest } from '../../hooks';
 import TabBar from '../../components/common/TabBar/TabBar';
@@ -6,6 +6,7 @@ import HistorySidebar from '../../components/common/HistorySidebar/HistorySideba
 import RequestPanel from '../../components/common/RequestPanel/RequestPanel';
 import ResponsePanel from '../../components/common/ResponsePanel/ResponsePanel';
 import './Tester.css';
+import { isStorageAvailable } from '../../utils/storage';
 
 export default function Tester() {
   const {
@@ -43,6 +44,12 @@ export default function Tester() {
       return false;
     }
   }
+
+  useEffect(() => {
+    if (!isStorageAvailable()) {
+      toast.error('Storage is unavailable in this browser. History and tabs will not persist across reloads');
+    }
+  }, []);
 
   function handleSend(): void {
     if (!activeTab || !activeTab.url.trim()) return;

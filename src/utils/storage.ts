@@ -59,22 +59,26 @@ export type HistoryEntry = {
 const TABS_KEY = 'daro_tabs';
 const HISTORY_KEY = 'daro_history';
 const MAX_HISTORY = 5; // Limited for testing, real value set to 100-200
+const STORAGE_AVAILABLE = isStorageAvailable();
 
 export function generateId(): string {
   return crypto.randomUUID();
 }
 
 export function getTabs(): Tab[] {
+  if (!STORAGE_AVAILABLE) return [];
   const tab = localStorage.getItem(TABS_KEY);
   if (!tab) return [];
   return JSON.parse(tab) as Tab[];
 }
 
 export function saveTabs(tabs: Tab[]): void {
+  if (!STORAGE_AVAILABLE) return;
   localStorage.setItem(TABS_KEY, JSON.stringify(tabs));
 }
 
 export function getHistory(): HistoryEntry[] {
+  if (!STORAGE_AVAILABLE) return [];
   const history = localStorage.getItem(HISTORY_KEY);
   if (!history) return [];
   return JSON.parse(history) as HistoryEntry[];
@@ -86,6 +90,7 @@ function pruneHistory(entries: HistoryEntry[]): HistoryEntry[] {
 }
 
 export function saveHistory(entries: HistoryEntry[]): void {
+  if (!STORAGE_AVAILABLE) return;
   try {
     const pruned = pruneHistory(entries);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(pruned));
@@ -113,4 +118,15 @@ export function getMethodColor(method: HttpMethod): string {
     ERROR: '#000000',
   };
   return color[method] ?? '#8b8b8b';
+}
+
+export function isStorageAvailable(): boolean {
+  try {
+    const test = '__storage_test__';
+    localStorage.setItem(test, test);
+    localStorage.removeItem(test);
+    return true;
+  } catch {
+    return false;
+  }
 }
