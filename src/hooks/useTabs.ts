@@ -7,6 +7,7 @@ function createDefaultTab(): Tab {
     label: 'New Tab',
     method: 'GET',
     url: '',
+    params: [],
     headers: [],
     body: '',
   };
@@ -15,7 +16,13 @@ function createDefaultTab(): Tab {
 export function useTabs() {
   const [tabs, setTabs] = useState<Tab[]>(() => {
     const saved = getTabs();
-    return saved.length > 0 ? saved : [createDefaultTab()];
+    return saved.length > 0
+      ? saved.map((tab) => ({
+          ...tab,
+          params: tab.params || [],
+          headers: tab.headers || [],
+        }))
+      : [createDefaultTab()];
   });
 
   const [activeTabId, setActiveTabId] = useState<string>(() => {

@@ -85,6 +85,7 @@ export default function Tester() {
       name: activeTab.label || 'Saved Endpoint',
       method: activeTab.method,
       url: activeTab.url,
+      params: activeTab.params || [],
       headers: activeTab.headers,
       body: activeTab.body,
     };
@@ -119,15 +120,15 @@ export default function Tester() {
       updateTab(activeTab.id, {
         method: endpoint.method,
         url: endpoint.url,
+        params: endpoint.params || [],
         headers: endpoint.headers,
         body: endpoint.body,
         label: endpoint.name,
       });
     } else {
       createTab();
-      // Need a way to update the newly created tab, 
-      // but createTab handles setting it as active.
-      // For simplicity, we assume one tab always exists.
+      // After creating a tab, the activeTabId changes but we don't have the new ID immediately in this scope easily.
+      // useTabs handles setting activeTabId.
     }
     toast.info(`Loaded: ${endpoint.name}`);
   }

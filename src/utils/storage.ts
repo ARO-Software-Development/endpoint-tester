@@ -40,6 +40,7 @@ export type Tab = {
   label: string;
   method: HttpMethod;
   url: string;
+  params: { key: string; value: string }[];
   headers: { key: string; value: string }[];
   body: string;
 };
@@ -61,6 +62,7 @@ export type SavedEndpoint = {
   name: string;
   method: HttpMethod;
   url: string;
+  params: { key: string; value: string }[];
   headers: { key: string; value: string }[];
   body: string;
 };

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { type HttpMethod, getMethodColor, type Tab } from '../../../utils/storage';
+import { parseParamsFromUrl, stringifyParamsToUrl } from '../../../utils/url';
 import './RequestPanel.css';
 
 interface RequestPanelProps {
@@ -21,7 +22,7 @@ export default function RequestPanel({
   onToggleHistory,
   historyOpen,
 }: RequestPanelProps) {
-  const [requestTab, setRequestTab] = useState<'headers' | 'body'>('headers');
+  const [requestTab, setRequestTab] = useState<'params' | 'headers' | 'body'>('params');
   const BODY_METHODS = ['POST', 'PUT', 'PATCH'] as HttpMethod[];
 
   useEffect(() => {
@@ -38,6 +39,45 @@ export default function RequestPanel({
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [activeTab, isLoading, onSend, onSave]);
 
+  // Sync Params -> URL
+  function handleParamChange(index: number, field: 'key' | 'value', value: string): void {
+    if (!activeTab) return;
+    const updatedParams = [...(activeTab.params || [])];
+    updatedParams[index] = { ...updatedParams[index], [field]: value };
+    
+    const newUrl = stringifyParamsToUrl(activeTab.url, updatedParams);
+    onUpdateTab(activeTab.id, { 
+      params: updatedParams,
+      url: newUrl 
+    });
+  }
+
+  function handleAddParam(): void {
+    if (!activeTab) return;
+    onUpdateTab(activeTab.id, {
+      params: [...(activeTab.params || []), { key: '', value: '' }],
+    });
+  }
+
+  function handleRemoveParam(index: number): void {
+    if (!activeTab) return;
+    const updatedParams = (activeTab.params || []).filter((_, i) => i !== index);
+    const newUrl = stringifyParamsToUrl(activeTab.url, updatedParams);
+    onUpdateTab(activeTab.id, { 
+      params: updatedParams,
+      url: newUrl 
+    });
+  }
+
+  // Sync Headers
+  function handleHeaderChange(index: number, field: 'key' | 'value', value: string): void {
+    if (!activeTab) return;
+    const updated = activeTab.headers.map((header, i) =>
+      i === index ? { ...header, [field]: value } : header,
+    );
+    onUpdateTab(activeTab.id, { headers: updated });
+  }
+
   function handleAddHeader(): void {
     if (!activeTab) return;
     onUpdateTab(activeTab.id, {
@@ -49,18 +89,6 @@ export default function RequestPanel({
     if (!activeTab) return;
     const update = activeTab.headers.filter((_, i) => i !== index);
     onUpdateTab(activeTab.id, { headers: update });
-  }
-
-  function handleHeaderChange(
-    index: number,
-    field: 'key' | 'value',
-    value: string,
-  ): void {
-    if (!activeTab) return;
-    const updated = activeTab.headers.map((header, i) =>
-      i === index ? { ...header, [field]: value } : header,
-    );
-    onUpdateTab(activeTab.id, { headers: updated });
   }
 
   return (
@@ -83,7 +111,7 @@ export default function RequestPanel({
             const method = e.target.value as HttpMethod;
             onUpdateTab(activeTab.id, { method });
             if (!BODY_METHODS.includes(method)) {
-              setRequestTab('headers');
+              if (requestTab === 'body') setRequestTab('params');
             }
           }}
         >
@@ -105,10 +133,13 @@ export default function RequestPanel({
           onChange={(e) => {
             if (!activeTab) return;
             const newUrl = e.target.value;
-            onUpdateTab(activeTab.id, { url: newUrl });
-            if (activeTab.label === 'New Tab' || activeTab.label === activeTab.url) {
-              onUpdateTab(activeTab.id, { label: newUrl });
-            }
+            const newParams = parseParamsFromUrl(newUrl);
+            
+            onUpdateTab(activeTab.id, { 
+              url: newUrl,
+              params: newParams,
+              label: (activeTab.label === 'New Tab' || activeTab.label === activeTab.url) ? newUrl : activeTab.label
+            });
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') onSend();
@@ -133,8 +164,20 @@ export default function RequestPanel({
           </button>
         </div>
       </div>
-      {/* Headers / Body inner tabs */}
+
+      {/* Request Tabs */}
       <div className='request-tabs'>
+        <button
+          className={`request-tab-btn ${requestTab === 'params' ? 'active' : ''}`}
+          onClick={() => setRequestTab('params')}
+        >
+          Params
+          {(activeTab?.params?.length ?? 0) > 0 && (
+            <span style={{ marginLeft: '0.3em', color: '#2F86D8' }}>
+              ({activeTab?.params?.length})
+            </span>
+          )}
+        </button>
         <button
           className={`request-tab-btn ${requestTab === 'headers' ? 'active' : ''}`}
           onClick={() => setRequestTab('headers')}
@@ -156,7 +199,41 @@ export default function RequestPanel({
         )}
       </div>
 
-      {/* Headers editor */}
+      {/* Params Editor */}
+      {requestTab === 'params' && (
+        <div className='headers-editor'>
+          {(activeTab?.params ?? []).map((param, index) => (
+            <div key={index} className='header-row'>
+              <input
+                type='text'
+                className='header-input'
+                placeholder='Key'
+                value={param.key}
+                onChange={(e) => handleParamChange(index, 'key', e.target.value)}
+              />
+              <input
+                type='text'
+                className='header-input'
+                placeholder='Value'
+                value={param.value}
+                onChange={(e) => handleParamChange(index, 'value', e.target.value)}
+              />
+              <button
+                className='header-remove-btn'
+                onClick={() => handleRemoveParam(index)}
+                title='Remove param'
+              >
+                ×
+              </button>
+            </div>
+          ))}
+          <button className='add-header-btn' onClick={handleAddParam}>
+            + Add Param
+          </button>
+        </div>
+      )}
+
+      {/* Headers Editor */}
       {requestTab === 'headers' && (
         <div className='headers-editor'>
           {(activeTab?.headers ?? []).map((header, index) => (
@@ -190,7 +267,7 @@ export default function RequestPanel({
         </div>
       )}
 
-      {/* Body editor */}
+      {/* Body Editor */}
       {requestTab === 'body' && BODY_METHODS.includes(activeTab?.method ?? 'ERROR') && (
         <textarea
           className='body-editor'
