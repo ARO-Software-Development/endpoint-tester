@@ -6,16 +6,17 @@ interface RequestPanelProps {
   activeTab: Tab | undefined;
   onUpdateTab: (id: string, changes: Partial<Tab>) => void;
   onSend: () => void;
+  onSave: () => void;
   isLoading: boolean;
   onToggleHistory: () => void;
   historyOpen: boolean;
-  // import handleSend: () => void
 }
 
 export default function RequestPanel({
   activeTab,
   onUpdateTab,
   onSend,
+  onSave,
   isLoading,
   onToggleHistory,
   historyOpen,
@@ -28,10 +29,14 @@ export default function RequestPanel({
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         onSend()
       }
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        onSave();
+      }
     }
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [activeTab, isLoading]);
+  }, [activeTab, isLoading, onSend, onSave]);
 
   function handleAddHeader(): void {
     if (!activeTab) return;
@@ -109,14 +114,24 @@ export default function RequestPanel({
             if (e.key === 'Enter') onSend();
           }}
         />
-        <button
-          className={`send-btn ${isLoading ? 'loading' : ''}`}
-          onClick={onSend}
-          disabled={isLoading || !activeTab?.url.trim()}
-          title='Send Request (Ctrl+Enter)'
-        >
-          {isLoading ? 'Sending...' : 'Send'}
-        </button>
+        <div className="action-buttons">
+          <button
+            className="save-endpoint-btn"
+            onClick={onSave}
+            disabled={!activeTab?.url.trim()}
+            title="Save this endpoint (Ctrl+S)"
+          >
+            Save
+          </button>
+          <button
+            className={`send-btn ${isLoading ? 'loading' : ''}`}
+            onClick={onSend}
+            disabled={isLoading || !activeTab?.url.trim()}
+            title='Send Request (Ctrl+Enter)'
+          >
+            {isLoading ? 'Sending...' : 'Send'}
+          </button>
+        </div>
       </div>
       {/* Headers / Body inner tabs */}
       <div className='request-tabs'>

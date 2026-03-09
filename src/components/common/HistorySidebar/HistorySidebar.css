@@ -61,35 +61,33 @@
   border-bottom: 1px solid #2a2a2a;
 }
 
-.history-filter-tabs {
+.sidebar-tabs {
   display: flex;
-  padding: 0.5em;
-  gap: 0.25em;
-  background: #1a1a1a;
-  border-bottom: 1px solid #2a2a2a;
+  gap: 0.5rem;
+  background: #1e1e1e;
+  padding: 0.2rem;
+  border-radius: 6px;
 }
 
-.history-filter-btn {
-  flex: 1;
+.sidebar-tab-btn {
   background: none;
   border: none;
   color: #8b8b8b;
-  padding: 0.35em;
+  padding: 0.3rem 0.6rem;
   font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
+  font-weight: bold;
   border-radius: 4px;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.history-filter-btn:hover {
-  background: #252525;
+.sidebar-tab-btn:hover {
   color: #e3e3e3;
 }
 
-.history-filter-btn.active {
-  background: #2a2a2a;
-  color: #2F86D8;
+.sidebar-tab-btn.active {
+  background: #2F86D8;
+  color: #ffffff;
 }
 
 .header-actions {
@@ -143,12 +141,27 @@
   overflow: hidden;
 }
 
+.history-entry-name {
+  color: #e3e3e3;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .history-entry-url {
   font-size: 0.75rem;
   color: #e3e3e3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.history-entry-url.small {
+  font-size: 0.7rem;
+  opacity: 0.6;
 }
 
 .history-entry-meta {

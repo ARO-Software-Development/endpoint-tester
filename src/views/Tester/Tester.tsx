@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { useTabs, useHistory, useRequest } from '../../hooks';
+import { useTabs, useHistory, useRequest, useSavedEndpoints } from '../../hooks';
 import TabBar from '../../components/common/TabBar/TabBar';
 import HistorySidebar from '../../components/common/HistorySidebar/HistorySidebar';
 import RequestPanel from '../../components/common/RequestPanel/RequestPanel';
 import ResponsePanel from '../../components/common/ResponsePanel/ResponsePanel';
 import './Tester.css';
-import { isStorageAvailable } from '../../utils/storage';
+import { isStorageAvailable, generateId, type SavedEndpoint } from '../../utils/storage';
 
 export default function Tester() {
   const {
@@ -23,21 +23,24 @@ export default function Tester() {
     history,
     addEntry,
     clearHistory,
-    clearHistoryByTab,
     deleteEntry,
     replayRequest,
     getHistoryByTab,
     formatTimestamp,
     getStatusCategory,
   } = useHistory();
+
+  const {
+    savedEndpoints,
+    saveEndpoint,
+    deleteSavedEndpoint,
+  } = useSavedEndpoints();
   
   const { response, isLoading, executeRequest, clearResponse } = useRequest();
   const [historyOpen, setHistoryOpen] = useState<boolean>(false);
-  const [showGlobalHistory, setShowGlobalHistory] = useState<boolean>(false);
   
   const activeTab = getActiveTab();
   const tabHistory = activeTab ? getHistoryByTab(activeTab.id) : [];
-  const displayHistory = showGlobalHistory ? history : tabHistory;
 
   function validateUrl(url: string): boolean {
     try {
@@ -74,6 +77,22 @@ export default function Tester() {
     );
   }
 
+  function handleSaveEndpoint(): void {
+    if (!activeTab || !activeTab.url.trim()) return;
+
+    const newSaved: SavedEndpoint = {
+      id: generateId(),
+      name: activeTab.label || 'Saved Endpoint',
+      method: activeTab.method,
+      url: activeTab.url,
+      headers: activeTab.headers,
+      body: activeTab.body,
+    };
+
+    saveEndpoint(newSaved);
+    toast.success('Endpoint saved successfully');
+  }
+
   function handleTabSwitch(id: string): void {
     setActiveTabId(id);
     clearResponse();
@@ -95,22 +114,31 @@ export default function Tester() {
     }
   }
 
-  function handleClearHistory(): void {
-    const isGlobal = showGlobalHistory;
-    const message = isGlobal 
-      ? 'Are you sure you want to clear all history?' 
-      : 'Are you sure you want to clear history for this tab?';
+  function handleReplaySaved(endpoint: SavedEndpoint): void {
+    if (activeTab) {
+      updateTab(activeTab.id, {
+        method: endpoint.method,
+        url: endpoint.url,
+        headers: endpoint.headers,
+        body: endpoint.body,
+        label: endpoint.name,
+      });
+    } else {
+      createTab();
+      // Need a way to update the newly created tab, 
+      // but createTab handles setting it as active.
+      // For simplicity, we assume one tab always exists.
+    }
+    toast.info(`Loaded: ${endpoint.name}`);
+  }
 
-    toast.warning(message, {
+  function handleClearHistory(): void {
+    toast.warning('Are you sure you want to clear all history?', {
       description: 'This action cannot be undone.',
       action: {
         label: 'Clear',
         onClick: () => {
-          if (isGlobal) {
-            clearHistory();
-          } else if (activeTab) {
-            clearHistoryByTab(activeTab.id);
-          }
+          clearHistory();
           toast.success('History cleared successfully');
         },
       },
@@ -121,12 +149,13 @@ export default function Tester() {
     <div className='tester-container'>
       <HistorySidebar
         isOpen={historyOpen}
-        entries={displayHistory}
-        showGlobal={showGlobalHistory}
+        entries={tabHistory}
+        savedEntries={savedEndpoints}
         onClear={handleClearHistory}
         onReplay={handleReplay}
+        onReplaySaved={handleReplaySaved}
         onDelete={deleteEntry}
-        onToggleGlobal={setShowGlobalHistory}
+        onDeleteSaved={deleteSavedEndpoint}
         getStatusCategory={getStatusCategory}
         formatTimestamp={formatTimestamp}
         onToggle={() => setHistoryOpen(prev => !prev)}
@@ -147,6 +176,7 @@ export default function Tester() {
             activeTab={activeTab}
             onUpdateTab={updateTab}
             onSend={handleSend}
+            onSave={handleSaveEndpoint}
             isLoading={isLoading}
             onToggleHistory={() => setHistoryOpen(prev => !prev)}
             historyOpen={historyOpen}

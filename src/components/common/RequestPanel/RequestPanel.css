@@ -54,6 +54,34 @@
   color: #555;
 }
 
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.save-endpoint-btn {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  color: #e3e3e3;
+  padding: 0 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.save-endpoint-btn:hover:not(:disabled) {
+  border-color: #2F86D8;
+  color: #2F86D8;
+}
+
+.save-endpoint-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .send-btn {
   background: #2F86D8;
   color: #ffffff;

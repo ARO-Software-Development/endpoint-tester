@@ -56,8 +56,18 @@ export type HistoryEntry = {
   responseTime: number;
 };
 
+export type SavedEndpoint = {
+  id: string;
+  name: string;
+  method: HttpMethod;
+  url: string;
+  headers: { key: string; value: string }[];
+  body: string;
+};
+
 const TABS_KEY = 'daro_tabs';
 const HISTORY_KEY = 'daro_history';
+const SAVED_KEY = 'daro_saved_endpoints';
 const MAX_HISTORY = 5; // Limited for testing, real value set to 100-200
 const STORAGE_AVAILABLE = isStorageAvailable();
 
@@ -82,6 +92,18 @@ export function getHistory(): HistoryEntry[] {
   const history = localStorage.getItem(HISTORY_KEY);
   if (!history) return [];
   return JSON.parse(history) as HistoryEntry[];
+}
+
+export function getSavedEndpoints(): SavedEndpoint[] {
+  if (!STORAGE_AVAILABLE) return [];
+  const saved = localStorage.getItem(SAVED_KEY);
+  if (!saved) return [];
+  return JSON.parse(saved) as SavedEndpoint[];
+}
+
+export function saveEndpoints(endpoints: SavedEndpoint[]): void {
+  if (!STORAGE_AVAILABLE) return;
+  localStorage.setItem(SAVED_KEY, JSON.stringify(endpoints));
 }
 
 function pruneHistory(entries: HistoryEntry[]): HistoryEntry[] {
