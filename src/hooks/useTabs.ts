@@ -8,6 +8,7 @@ function createDefaultTab(): Tab {
     method: 'GET',
     url: '',
     params: [],
+    pathParams: [],
     headers: [],
     body: '',
   };
@@ -20,6 +21,7 @@ export function useTabs() {
       ? saved.map((tab) => ({
           ...tab,
           params: tab.params || [],
+          pathParams: tab.pathParams || [],
           headers: tab.headers || [],
         }))
       : [createDefaultTab()];

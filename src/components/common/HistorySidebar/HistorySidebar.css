@@ -214,6 +214,23 @@
   color: #f44336;
 }
 
+.history-clear-btn {
+  background: none;
+  border: none;
+  color: #8b8b8b;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-clear-btn:hover {
+  color: #f44336;
+  background: rgba(244, 67, 67, 0.1);
+}
+
 /* Responsive adjustment for mobile: bottom sheet */
 @media (max-width: 768px) {
   .history-sidebar {

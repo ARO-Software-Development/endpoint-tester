@@ -41,6 +41,7 @@ export type Tab = {
   method: HttpMethod;
   url: string;
   params: { key: string; value: string }[];
+  pathParams: { key: string; value: string }[];
   headers: { key: string; value: string }[];
   body: string;
 };
@@ -51,6 +52,8 @@ export type HistoryEntry = {
   timestamp: string;
   method: HttpMethod;
   url: string;
+  params: { key: string; value: string }[];
+  pathParams: { key: string; value: string }[];
   headers: { key: string; value: string }[];
   body: string;
   responseStatus: number;
@@ -63,6 +66,7 @@ export type SavedEndpoint = {
   method: HttpMethod;
   url: string;
   params: { key: string; value: string }[];
+  pathParams: { key: string; value: string }[];
   headers: { key: string; value: string }[];
   body: string;
 };

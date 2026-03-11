@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { type HttpMethod, getMethodColor, type Tab } from '../../../utils/storage';
-import { parseParamsFromUrl, stringifyParamsToUrl } from '../../../utils/url';
+import { parseParamsFromUrl, stringifyParamsToUrl, parsePathParamsFromUrl } from '../../../utils/url';
 import './RequestPanel.css';
 
 interface RequestPanelProps {
@@ -69,6 +69,54 @@ export default function RequestPanel({
     });
   }
 
+  // Sync Path Params -> URL
+  function handlePathParamChange(index: number, field: 'key' | 'value', value: string): void {
+    if (!activeTab) return;
+    const oldParams = activeTab.pathParams || [];
+    const oldKey = oldParams[index].key;
+    const updatedParams = [...oldParams];
+    updatedParams[index] = { ...updatedParams[index], [field]: value };
+    
+    let newUrl = activeTab.url;
+    if (field === 'key' && oldKey !== value) {
+        // Update the URL to reflect the new key name: replace :oldKey with :value
+        const regex = new RegExp(`:${oldKey}(?=/|\\?|$)`, 'g');
+        newUrl = activeTab.url.replace(regex, `:${value}`);
+    }
+
+    onUpdateTab(activeTab.id, { 
+      pathParams: updatedParams,
+      url: newUrl 
+    });
+  }
+
+  function handleAddPathParam(): void {
+    if (!activeTab) return;
+    const [baseUrl, queryString] = activeTab.url.split('?');
+    const newBaseUrl = baseUrl.endsWith('/') ? `${baseUrl}:key` : `${baseUrl}/:key`;
+    const newUrl = queryString ? `${newBaseUrl}?${queryString}` : newBaseUrl;
+    
+    onUpdateTab(activeTab.id, {
+      url: newUrl,
+      pathParams: [...(activeTab.pathParams || []), { key: 'key', value: '' }],
+    });
+  }
+
+  function handleRemovePathParam(index: number): void {
+    if (!activeTab) return;
+    const oldKey = (activeTab.pathParams || [])[index].key;
+    const updatedParams = (activeTab.pathParams || []).filter((_, i) => i !== index);
+    
+    // Remove :key from URL (and the preceding slash if possible)
+    const regex = new RegExp(`/:${oldKey}(?=/|\\?|$)`, 'g');
+    let newUrl = activeTab.url.replace(regex, '');
+    
+    onUpdateTab(activeTab.id, { 
+      pathParams: updatedParams,
+      url: newUrl 
+    });
+  }
+
   // Sync Headers
   function handleHeaderChange(index: number, field: 'key' | 'value', value: string): void {
     if (!activeTab) return;
@@ -128,16 +176,18 @@ export default function RequestPanel({
         <input
           type='text'
           className='url-input'
-          placeholder='https://api.example.com/prefix/endpoint'
+          placeholder='https://api.example.com/:resource/:id'
           value={activeTab?.url ?? ''}
           onChange={(e) => {
             if (!activeTab) return;
             const newUrl = e.target.value;
             const newParams = parseParamsFromUrl(newUrl);
+            const newPathParams = parsePathParamsFromUrl(newUrl, activeTab.pathParams || []);
             
             onUpdateTab(activeTab.id, { 
               url: newUrl,
               params: newParams,
+              pathParams: newPathParams,
               label: (activeTab.label === 'New Tab' || activeTab.label === activeTab.url) ? newUrl : activeTab.label
             });
           }}
@@ -172,9 +222,9 @@ export default function RequestPanel({
           onClick={() => setRequestTab('params')}
         >
           Params
-          {(activeTab?.params?.length ?? 0) > 0 && (
+          {((activeTab?.params?.length ?? 0) + (activeTab?.pathParams?.length ?? 0)) > 0 && (
             <span style={{ marginLeft: '0.3em', color: '#2F86D8' }}>
-              ({activeTab?.params?.length})
+              ({(activeTab?.params?.length ?? 0) + (activeTab?.pathParams?.length ?? 0)})
             </span>
           )}
         </button>
@@ -202,6 +252,8 @@ export default function RequestPanel({
       {/* Params Editor */}
       {requestTab === 'params' && (
         <div className='headers-editor'>
+          {/* Query Params Section */}
+          <div className="params-section-label">Query Params</div>
           {(activeTab?.params ?? []).map((param, index) => (
             <div key={index} className='header-row'>
               <input
@@ -228,7 +280,38 @@ export default function RequestPanel({
             </div>
           ))}
           <button className='add-header-btn' onClick={handleAddParam}>
-            + Add Param
+            + Add Query Param
+          </button>
+
+          {/* Path Variables Section */}
+          <div className="params-section-label" style={{ marginTop: '1.5em' }}>Path Variables</div>
+          {(activeTab?.pathParams ?? []).map((param, index) => (
+            <div key={`path-${index}`} className='header-row'>
+              <input
+                type='text'
+                className='header-input'
+                placeholder='Key (e.g. id)'
+                value={param.key}
+                onChange={(e) => handlePathParamChange(index, 'key', e.target.value)}
+              />
+              <input
+                type='text'
+                className='header-input'
+                placeholder='Value'
+                value={param.value}
+                onChange={(e) => handlePathParamChange(index, 'value', e.target.value)}
+              />
+              <button
+                className='header-remove-btn'
+                onClick={() => handleRemovePathParam(index)}
+                title='Remove path variable'
+              >
+                ×
+              </button>
+            </div>
+          ))}
+          <button className='add-header-btn' onClick={handleAddPathParam}>
+            + Add Path Variable
           </button>
         </div>
       )}

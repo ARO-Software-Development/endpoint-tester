@@ -43,6 +43,8 @@ export function useHistory() {
     updateTab(entry.tabId, {
       method: entry.method,
       url: entry.url,
+      params: entry.params || [],
+      pathParams: entry.pathParams || [],
       headers: entry.headers,
       body: entry.body,
     });

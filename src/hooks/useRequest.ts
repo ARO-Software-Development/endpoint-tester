@@ -4,6 +4,7 @@ import {
   type HttpMethod,
   generateId,
 } from '../utils/storage';
+import { substitutePathParams } from '../utils/url';
 
 export type RequestResponse = {
   status: number;
@@ -57,6 +58,8 @@ export function useRequest() {
     tabId: string,
     method: HttpMethod,
     url: string,
+    params: { key: string; value: string }[],
+    pathParams: { key: string; value: string }[],
     headers: { key: string; value: string }[],
     body: string,
     responseStatus: number,
@@ -68,6 +71,8 @@ export function useRequest() {
       timestamp: new Date().toISOString(),
       method,
       url,
+      params,
+      pathParams,
       headers,
       body,
       responseStatus,
@@ -80,6 +85,8 @@ export function useRequest() {
     tabId: string,
     method: HttpMethod,
     url: string,
+    params: { key: string; value: string }[],
+    pathParams: { key: string; value: string }[],
     headers: { key: string; value: string }[],
     body: string,
     addEntry: (entry: HistoryEntry) => void,
@@ -89,6 +96,7 @@ export function useRequest() {
     setResponse(null);
 
     const startTime = performance.now();
+    const substitutedUrl = substitutePathParams(url, pathParams);
 
     try {
       const header = buildHeaders(headers);
@@ -100,7 +108,7 @@ export function useRequest() {
         options.body = body;
       }
 
-      const res = await fetch(url, options);
+      const res = await fetch(substitutedUrl, options);
       const responseTime = performance.now() - startTime;
       const responseData = await parseResponseBody(res);
       const parseHeaders = parseResponseHeaders(res.headers);
@@ -119,6 +127,8 @@ export function useRequest() {
         tabId,
         method,
         url,
+        params,
+        pathParams,
         headers,
         body,
         res.status,
@@ -140,7 +150,7 @@ export function useRequest() {
         errorMessage,
       });
 
-      logToHistory(addEntry, tabId, method, url, headers, body, 0, responseTime);
+      logToHistory(addEntry, tabId, method, url, params, pathParams, headers, body, 0, responseTime);
     } finally {
       setIsLoading(false);
     }

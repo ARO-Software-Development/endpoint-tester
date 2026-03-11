@@ -193,6 +193,17 @@
   border-color: transparent;
 }
 
+.params-section-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #8b8b8b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5em;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid #2a2a2a;
+}
+
 .add-header-btn {
   align-self: flex-start;
   background: none;
