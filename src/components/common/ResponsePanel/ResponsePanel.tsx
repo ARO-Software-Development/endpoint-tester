@@ -1,16 +1,8 @@
 import { useEffect, useState } from "react";
+import { type RequestResponse } from "../../../utils/storage";
+import Editor from "../Editor/Editor";
 import "./ResponsePanel.css";
 import { toast } from "sonner";
-
-interface RequestResponse {
-  status: number;
-  statusText: string;
-  responseTime: number;
-  data: unknown;
-  isError: boolean;
-  errorMessage?: string;
-  headers: Record<string, string | string[]>;
-}
 
 interface ResponsePanelProps {
   response: RequestResponse | null;
@@ -28,7 +20,6 @@ export default function ResponsePanel({
   const [responseTab, setResponseTab] = useState<"body" | "headers">("body");
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPrettyPrint(true);
     setResponseTab("body");
   }, [response]);
@@ -48,6 +39,22 @@ export default function ResponsePanel({
     setTimeout(() => setCopied(false), 2000);
     toast.success("Response copied to clipboard!");
   }
+
+  function formatSize(bytes?: number): string {
+    if (bytes === undefined || bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  }
+
+  const responseBody = response?.data
+    ? typeof response.data === "string"
+      ? response.data
+      : prettyPrint
+        ? JSON.stringify(response.data, null, 2)
+        : JSON.stringify(response.data)
+    : "";
 
   return (
     <div className="response-panel">
@@ -70,7 +77,24 @@ export default function ResponsePanel({
                 : `${response.status} ${response.statusText}`}
             </span>
             <span className="response-time">{Math.round(response.responseTime)} ms</span>
-            {!response.isError && (
+            <span className="response-size">{formatSize(response.size)}</span>
+            
+            <div className="response-tabs-mini">
+              <button 
+                className={`mini-tab ${responseTab === 'body' ? 'active' : ''}`}
+                onClick={() => setResponseTab('body')}
+              >
+                Body
+              </button>
+              <button 
+                className={`mini-tab ${responseTab === 'headers' ? 'active' : ''}`}
+                onClick={() => setResponseTab('headers')}
+              >
+                Headers
+              </button>
+            </div>
+
+            {!response.isError && responseTab === 'body' && (
               <>
                 {typeof response.data !== "string" && (
               <button
@@ -98,18 +122,18 @@ export default function ResponsePanel({
               <span className="response-error">{response.errorMessage}</span>
             </div>
           ) : responseTab === 'body' ? (
-            <div className="response-body">
-              {typeof response.data === "string"
-                ? response.data
-                : prettyPrint
-                  ? JSON.stringify(response.data, null, 2)
-                  : JSON.stringify(response.data)}
+            <div className="response-body-editor">
+              <Editor
+                value={responseBody}
+                readOnly={true}
+              />
             </div>
           ) : (
-            <div className="response-body">
+            <div className="response-headers-list">
               {Object.entries(response.headers).map(([key, value]) => (
-                <div key={key}>
-                  <strong>{key}:</strong> {String(value)}
+                <div key={key} className="response-header-item">
+                  <span className="header-key">{key}:</span>
+                  <span className="header-value">{String(value)}</span>
                 </div>
               ))}
             </div>

@@ -21,7 +21,7 @@ This document provides foundational context and development guidelines for the D
 ```text
 src/
 ├── components/
-│   ├── common/         # Reusable UI components (TabBar, RequestPanel, etc.)
+│   ├── common/         # Reusable UI components (TabBar, RequestPanel, Editor, etc.)
 │   └── layout/         # High-level layout components (Header, Footer)
 ├── hooks/              # Core business logic separated into custom hooks
 ├── utils/              # Helper functions and data layer (storage, URL parsing)
@@ -67,6 +67,20 @@ URL validation is performed in the `Tester` view before executing requests. It r
 
 ## Data Models
 
+### RequestResponse
+```typescript
+{
+  status: number;
+  statusText: string;
+  responseTime: number;
+  data: unknown;
+  headers: Record<string, string>;
+  isError: boolean;
+  errorMessage?: string;
+  size?: number; // Response size in bytes
+}
+```
+
 ### Tab
 ```typescript
 {
@@ -75,8 +89,11 @@ URL validation is performed in the `Tester` view before executing requests. It r
   method: HttpMethod;
   url: string;
   params: { key: string; value: string }[];
+  pathParams: { key: string; value: string }[];
   headers: { key: string; value: string }[];
   body: string;
+  response?: RequestResponse | null;
+  savedId?: string; // Tracks if this tab is linked to a SavedEndpoint
 }
 ```
 
@@ -88,6 +105,8 @@ URL validation is performed in the `Tester` view before executing requests. It r
   timestamp: string;
   method: HttpMethod;
   url: string;
+  params: { key: string; value: string }[];
+  pathParams: { key: string; value: string }[];
   headers: { key: string; value: string }[];
   body: string;
   responseStatus: number;
@@ -96,7 +115,7 @@ URL validation is performed in the `Tester` view before executing requests. It r
 ```
 
 ## TODOs / Roadmap
-- Support for `PUT` requests.
-- Syntax highlighting for JSON response body.
+- Syntax highlighting for JSON (current Editor uses vanilla textarea with line numbers).
 - Environment variable support (e.g., `{{baseUrl}}`).
 - Tests (currently no test suite is configured).
+- Export/Import collections.

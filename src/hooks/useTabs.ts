@@ -11,6 +11,8 @@ function createDefaultTab(): Tab {
     pathParams: [],
     headers: [],
     body: '',
+    response: null,
+    savedId: undefined,
   };
 }
 
@@ -23,6 +25,8 @@ export function useTabs() {
           params: tab.params || [],
           pathParams: tab.pathParams || [],
           headers: tab.headers || [],
+          response: tab.response || null,
+          savedId: tab.savedId,
         }))
       : [createDefaultTab()];
   });

@@ -35,6 +35,17 @@ export const STATUS_LABELS: Record<number, string> = {
   504: 'GATEWAY TIMEOUT',
 };
 
+export type RequestResponse = {
+  status: number;
+  statusText: string;
+  responseTime: number;
+  data: unknown;
+  headers: Record<string, string>;
+  isError: boolean;
+  errorMessage?: string;
+  size?: number; // Response size in bytes
+};
+
 export type Tab = {
   id: string;
   label: string;
@@ -44,6 +55,8 @@ export type Tab = {
   pathParams: { key: string; value: string }[];
   headers: { key: string; value: string }[];
   body: string;
+  response?: RequestResponse | null;
+  savedId?: string; // Tracks if this tab is linked to a SavedEndpoint
 };
 
 export type HistoryEntry = {

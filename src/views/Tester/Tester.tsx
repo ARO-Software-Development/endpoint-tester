@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useTabs, useHistory, useRequest, useSavedEndpoints } from '../../hooks';
 import TabBar from '../../components/common/TabBar/TabBar';
@@ -34,13 +34,39 @@ export default function Tester() {
     savedEndpoints,
     saveEndpoint,
     deleteSavedEndpoint,
+    updateSavedEndpoint,
   } = useSavedEndpoints();
   
-  const { response, isLoading, executeRequest, clearResponse } = useRequest();
+  const { response, setResponse, isLoading, executeRequest } = useRequest();
   const [historyOpen, setHistoryOpen] = useState<boolean>(false);
   
   const activeTab = getActiveTab();
   const tabHistory = activeTab ? getHistoryByTab(activeTab.id) : [];
+
+  // Sync response with active tab
+  useEffect(() => {
+    if (activeTab) {
+      setResponse(activeTab.response || null);
+    } else {
+      setResponse(null);
+    }
+  }, [activeTabId, activeTab?.id, setResponse, activeTab]); // Only when tab changes
+
+  // Dirty state detection
+  const isDirty = useMemo(() => {
+    if (!activeTab || !activeTab.savedId) return true;
+    const saved = savedEndpoints.find(e => e.id === activeTab.savedId);
+    if (!saved) return true;
+
+    return (
+      activeTab.method !== saved.method ||
+      activeTab.url !== saved.url ||
+      activeTab.body !== saved.body ||
+      JSON.stringify(activeTab.params) !== JSON.stringify(saved.params) ||
+      JSON.stringify(activeTab.pathParams) !== JSON.stringify(saved.pathParams) ||
+      JSON.stringify(activeTab.headers) !== JSON.stringify(saved.headers)
+    );
+  }, [activeTab, savedEndpoints]);
 
   function validateUrl(url: string): boolean {
     try {
@@ -57,7 +83,7 @@ export default function Tester() {
     }
   }, []);
 
-  function handleSend(): void {
+  async function handleSend(): Promise<void> {
     if (!activeTab || !activeTab.url.trim()) return;
     
     if (!validateUrl(activeTab.url.trim())) {
@@ -67,7 +93,7 @@ export default function Tester() {
       return;
     }
 
-    executeRequest(
+    const res = await executeRequest(
       activeTab.id,
       activeTab.method,
       activeTab.url,
@@ -77,13 +103,35 @@ export default function Tester() {
       activeTab.body,
       addEntry,
     );
+
+    if (res) {
+      updateTab(activeTab.id, { response: res });
+    }
   }
 
   function handleSaveEndpoint(): void {
     if (!activeTab || !activeTab.url.trim()) return;
 
+    if (activeTab.savedId) {
+      const existing = savedEndpoints.find(e => e.id === activeTab.savedId);
+      if (existing) {
+        updateSavedEndpoint(activeTab.savedId, {
+          method: activeTab.method,
+          url: activeTab.url,
+          params: activeTab.params || [],
+          pathParams: activeTab.pathParams || [],
+          headers: activeTab.headers,
+          body: activeTab.body,
+          name: activeTab.label || existing.name,
+        });
+        toast.success('Endpoint updated successfully');
+        return;
+      }
+    }
+
+    const newId = generateId();
     const newSaved: SavedEndpoint = {
-      id: generateId(),
+      id: newId,
       name: activeTab.label || 'Saved Endpoint',
       method: activeTab.method,
       url: activeTab.url,
@@ -94,12 +142,13 @@ export default function Tester() {
     };
 
     saveEndpoint(newSaved);
+    updateTab(activeTab.id, { savedId: newId });
     toast.success('Endpoint saved successfully');
   }
 
   function handleTabSwitch(id: string): void {
     setActiveTabId(id);
-    clearResponse();
+    // Response sync handled by useEffect
   }
 
   function handleReplay(tabId: string): void {
@@ -110,11 +159,11 @@ export default function Tester() {
     if (targetTab) {
       replayRequest(entry, updateTab);
       setActiveTabId(entry.tabId);
-      clearResponse();
     } else {
       createTab();
+      // Note: createTab sets activeTabId, but we might need to wait for it 
+      // or handle it in useTabs. For now, this is existing logic.
       replayRequest({ ...entry, tabId: activeTabId }, updateTab);
-      clearResponse();
     }
   }
 
@@ -128,11 +177,12 @@ export default function Tester() {
         headers: endpoint.headers,
         body: endpoint.body,
         label: endpoint.name,
+        savedId: endpoint.id,
+        response: null, // Clear response when loading a saved one
       });
     } else {
       createTab();
-      // After creating a tab, the activeTabId changes but we don't have the new ID immediately in this scope easily.
-      // useTabs handles setting activeTabId.
+      // Future: implement logic to load into the newly created tab
     }
     toast.info(`Loaded: ${endpoint.name}`);
   }
@@ -186,6 +236,7 @@ export default function Tester() {
             isLoading={isLoading}
             onToggleHistory={() => setHistoryOpen(prev => !prev)}
             historyOpen={historyOpen}
+            isDirty={isDirty}
           />
           
           <ResponsePanel
@@ -198,3 +249,4 @@ export default function Tester() {
     </div>
   );
 }
+

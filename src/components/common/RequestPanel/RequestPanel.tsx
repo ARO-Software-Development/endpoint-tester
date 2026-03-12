@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { type HttpMethod, getMethodColor, type Tab } from '../../../utils/storage';
 import { parseParamsFromUrl, stringifyParamsToUrl, parsePathParamsFromUrl } from '../../../utils/url';
+import Editor from '../Editor/Editor';
 import './RequestPanel.css';
+import { toast } from 'sonner';
 
 interface RequestPanelProps {
   activeTab: Tab | undefined;
@@ -11,6 +13,7 @@ interface RequestPanelProps {
   isLoading: boolean;
   onToggleHistory: () => void;
   historyOpen: boolean;
+  isDirty?: boolean;
 }
 
 export default function RequestPanel({
@@ -21,6 +24,7 @@ export default function RequestPanel({
   isLoading,
   onToggleHistory,
   historyOpen,
+  isDirty = true,
 }: RequestPanelProps) {
   const [requestTab, setRequestTab] = useState<'params' | 'headers' | 'body'>('params');
   const BODY_METHODS = ['POST', 'PUT', 'PATCH'] as HttpMethod[];
@@ -139,6 +143,16 @@ export default function RequestPanel({
     onUpdateTab(activeTab.id, { headers: update });
   }
 
+  function handlePrettify(): void {
+    if (!activeTab || !activeTab.body) return;
+    try {
+      const obj = JSON.parse(activeTab.body);
+      onUpdateTab(activeTab.id, { body: JSON.stringify(obj, null, 2) });
+    } catch {
+      toast.error('Invalid JSON in body');
+    }
+  }
+
   return (
     <div className='request-panel'>
       {/* URL Row */}
@@ -197,12 +211,12 @@ export default function RequestPanel({
         />
         <div className="action-buttons">
           <button
-            className="save-endpoint-btn"
+            className={`save-endpoint-btn ${isDirty ? 'dirty' : ''}`}
             onClick={onSave}
             disabled={!activeTab?.url.trim()}
             title="Save this endpoint (Ctrl+S)"
           >
-            Save
+            {isDirty ? 'Save*' : 'Saved'}
           </button>
           <button
             className={`send-btn ${isLoading ? 'loading' : ''}`}
@@ -352,15 +366,19 @@ export default function RequestPanel({
 
       {/* Body Editor */}
       {requestTab === 'body' && BODY_METHODS.includes(activeTab?.method ?? 'ERROR') && (
-        <textarea
-          className='body-editor'
-          placeholder='{"key": "value"}'
-          value={activeTab?.body ?? ''}
-          onChange={(e) => {
-            if (!activeTab) return;
-            onUpdateTab(activeTab.id, { body: e.target.value });
-          }}
-        />
+        <div className="body-editor-container">
+          <div className="body-editor-toolbar">
+            <button className="toolbar-btn" onClick={handlePrettify}>Prettify JSON</button>
+          </div>
+          <Editor
+            placeholder='{"key": "value"}'
+            value={activeTab?.body ?? ''}
+            onChange={(val) => {
+              if (!activeTab) return;
+              onUpdateTab(activeTab.id, { body: val });
+            }}
+          />
+        </div>
       )}
     </div>
   );

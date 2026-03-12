@@ -11,12 +11,15 @@ This project is currently in active development. The goal is to provide a clean 
 * **Request Methods:**
 * `GET`: Fetch data from any public or local API.
 * `POST`: Send new data to a server.
+* `PUT`: Update existing resources.
 * `PATCH`: Test partial resource updates.
 * `DELETE`: Verify resource removal.
 
-
-* **Response Viewer:** Real-time display of the JSON response returned by the server.
-* **Custom Headers:** (Planned/In-Progress) Ability to add Auth tokens or Content-Type headers.
+* **Response Viewer:** Real-time display of the JSON response, including **status codes, response time, and response size**.
+* **Multi-Tab Interface:** Manage multiple requests simultaneously with persistent state.
+* **Request History:** Automatically track and replay previous requests.
+* **Saved Endpoints:** Save and update frequently used API calls.
+* **Editor with Line Numbers:** Improved body editing experience.
 
 ---
 
@@ -68,14 +71,16 @@ pnpm build
 
 ## 🗺️ Roadmap
 
-* [ ] Add support for `GET` requests.
-* [ ] Add support for `POST` requests.
-* [ ] Add support for `PATCH` requests.
-* [ ] Add support for `DELETE` requests.
-* [ ] Add support for `PUT` requests.
-* [ ] Syntax highlighting for the JSON response body.
-* [ ] Request History (Local Storage) to save previous tests.
+* [x] Support for all common HTTP methods (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`).
+* [x] Multi-tab interface with persistent state.
+* [x] Request History (Local Storage) to save and replay previous tests.
+* [x] Saved Endpoints with update/edit capabilities.
+* [x] Response size calculation and display.
+* [x] Editor with line numbers.
+* [ ] Advanced Syntax highlighting for JSON (currently uses line numbers only).
 * [ ] Environment variable support (e.g., `{{baseUrl}}`).
+* [ ] Collections export/import (JSON).
+* [ ] Unit/Integration tests.
 
 ---
 

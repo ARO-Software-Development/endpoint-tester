@@ -2,19 +2,10 @@ import { useState } from 'react';
 import {
   type HistoryEntry,
   type HttpMethod,
+  type RequestResponse,
   generateId,
 } from '../utils/storage';
 import { substitutePathParams } from '../utils/url';
-
-export type RequestResponse = {
-  status: number;
-  statusText: string;
-  responseTime: number;
-  data: unknown;
-  headers: Record<string, string>;
-  isError: boolean;
-  errorMessage?: string;
-};
 
 export function useRequest() {
   const [response, setResponse] = useState<RequestResponse | null>(null);
@@ -39,6 +30,19 @@ export function useRequest() {
       }
     }
     return await res.text();
+  }
+
+  function calculateSize(headers: Headers, data: unknown): number {
+    const contentLength = headers.get('content-length');
+    if (contentLength) {
+      return parseInt(contentLength, 10);
+    }
+    
+    // Fallback calculation
+    if (!data) return 0;
+    if (typeof data === 'string') return new Blob([data]).size;
+    if (typeof data === 'object') return new Blob([JSON.stringify(data)]).size;
+    return 0;
   }
 
   function buildHeaders(
@@ -90,13 +94,14 @@ export function useRequest() {
     headers: { key: string; value: string }[],
     body: string,
     addEntry: (entry: HistoryEntry) => void,
-  ): Promise<void> {
+  ): Promise<RequestResponse | null> {
     setIsLoading(true);
     setError(null);
     setResponse(null);
 
     const startTime = performance.now();
     const substitutedUrl = substitutePathParams(url, pathParams);
+    let finalResponse: RequestResponse | null = null;
 
     try {
       const header = buildHeaders(headers);
@@ -112,15 +117,19 @@ export function useRequest() {
       const responseTime = performance.now() - startTime;
       const responseData = await parseResponseBody(res);
       const parseHeaders = parseResponseHeaders(res.headers);
+      const size = calculateSize(res.headers, responseData);
 
-      setResponse({
+      finalResponse = {
         status: res.status,
         statusText: res.statusText,
         responseTime,
         data: responseData,
         headers: parseHeaders,
         isError: false,
-      });
+        size,
+      };
+
+      setResponse(finalResponse);
 
       logToHistory(
         addEntry,
@@ -140,7 +149,7 @@ export function useRequest() {
         error instanceof Error ? error.message : 'Unkown error occurred';
 
       setError(errorMessage);
-      setResponse({
+      finalResponse = {
         status: 0,
         statusText: 'Network Error',
         responseTime,
@@ -148,21 +157,26 @@ export function useRequest() {
         headers: {},
         isError: true,
         errorMessage,
-      });
+        size: 0,
+      };
+      
+      setResponse(finalResponse);
 
       logToHistory(addEntry, tabId, method, url, params, pathParams, headers, body, 0, responseTime);
     } finally {
       setIsLoading(false);
     }
+    return finalResponse;
   }
 
-  function clearResponse(): void {
+    function clearResponse(): void {
     setResponse(null);
     setError(null);
   }
 
   return {
     response,
+    setResponse,
     isLoading,
     error,
     executeRequest,
