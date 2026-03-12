@@ -113,7 +113,7 @@ export default function RequestPanel({
     
     // Remove :key from URL (and the preceding slash if possible)
     const regex = new RegExp(`/:${oldKey}(?=/|\\?|$)`, 'g');
-    let newUrl = activeTab.url.replace(regex, '');
+    const newUrl = activeTab.url.replace(regex, '');
     
     onUpdateTab(activeTab.id, { 
       pathParams: updatedParams,

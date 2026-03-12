@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { type RequestResponse } from "../../../utils/storage";
 import Editor from "../Editor/Editor";
 import "./ResponsePanel.css";
@@ -18,11 +18,18 @@ export default function ResponsePanel({
   const [prettyPrint, setPrettyPrint] = useState<boolean>(true);
   const [copied, setCopied] = useState<boolean>(false);
   const [responseTab, setResponseTab] = useState<"body" | "headers">("body");
+  
+  const [prevResponseId, setPrevResponseId] = useState<string | null>(null);
 
-  useEffect(() => {
+  const currentResponseId = response?.responseTime 
+    ? `${response.status}-${response.responseTime}` 
+    : null;
+
+  if (currentResponseId !== prevResponseId && currentResponseId !== null) {
+    setPrevResponseId(currentResponseId);
     setPrettyPrint(true);
     setResponseTab("body");
-  }, [response]);
+  }
 
   async function handleCopyResponse(): Promise<void> {
     if (!response?.data) {
@@ -97,22 +104,22 @@ export default function ResponsePanel({
             {!response.isError && responseTab === 'body' && (
               <>
                 {typeof response.data !== "string" && (
-              <button
-                className="pretty-toggle"
-                onClick={() => setPrettyPrint((prev) => !prev)}
-              >
-                {prettyPrint ? "Raw" : "Pretty"}
-              </button>
-            )}
-            <button
-              className="pretty-toggle"
-              onClick={handleCopyResponse}
-              style={{
-                marginLeft: typeof response.data === "string" ? "auto" : "0",
-              }}
-            >
-              {copied ? "Copied" : "Copy"}
-            </button>
+                  <button
+                    className="pretty-toggle"
+                    onClick={() => setPrettyPrint((prev) => !prev)}
+                  >
+                    {prettyPrint ? "Raw" : "Pretty"}
+                  </button>
+                )}
+                <button
+                  className="pretty-toggle"
+                  onClick={handleCopyResponse}
+                  style={{
+                    marginLeft: typeof response.data === "string" ? "auto" : "0",
+                  }}
+                >
+                  {copied ? "Copied" : "Copy"}
+                </button>
               </>
             )}
           </div>
