@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import {
+  type AuthConfig,
   type HistoryEntry,
   type HttpMethod,
   type RequestResponse,
   generateId,
 } from '../utils/storage';
-import { substitutePathParams } from '../utils/url';
+import { stringifyParamsToUrl, substitutePathParams } from '../utils/url';
 
 export function useRequest() {
   const [response, setResponse] = useState<RequestResponse | null>(null);
@@ -43,6 +44,40 @@ export function useRequest() {
     if (typeof data === 'string') return new Blob([data]).size;
     if (typeof data === 'object') return new Blob([JSON.stringify(data)]).size;
     return 0;
+  }
+
+  function applyAuth(
+    auth: AuthConfig | undefined,
+    headers: Record<string, string>,
+    params: { key: string, value: string}[]
+  ): { headers: Record<string, string>; params: { key: string; value: string }[] } {
+    if (!auth || auth.type === 'no-auth') return { headers, params };
+
+    const newHeaders = { ...headers };
+    const newParams = { ...params };
+
+    if (auth.type === 'bearer' && auth.bearer?.token) {
+      newHeaders['Authorization'] = `Bearer ${auth.bearer.token}`
+    }
+    else if (auth.type === 'jwt' && auth.jwt?.token) {
+      newHeaders['Authorization'] = `Bearer ${auth.jwt.token}`
+    }
+    else if (auth.type === 'oauth2' && auth.oauth2?.accessToken) {
+      newHeaders['Authorization'] = `Bearer ${auth.oauth2.accessToken}`
+    }
+    else if (auth.type === 'basic' && auth.basic) {
+      const encoded = btoa(`${auth.basic.username}:${auth.basic.password}`);
+      newHeaders['Authorization'] = `Basic ${encoded}`;
+    }
+    else if (auth.type === 'api-key' && auth.apiKey) {
+      if (auth.apiKey.addTo === 'headers') {
+        newHeaders[auth.apiKey.key] = auth.apiKey.value;
+      } else {
+        newParams.push({ key: auth.apiKey.key, value: auth.apiKey.value });
+      }
+    }
+
+    return { headers: newHeaders, params: newParams }
   }
 
   function buildHeaders(
@@ -94,26 +129,35 @@ export function useRequest() {
     headers: { key: string; value: string }[],
     body: string,
     addEntry: (entry: HistoryEntry) => void,
+    auth?: AuthConfig,
   ): Promise<RequestResponse | null> {
     setIsLoading(true);
     setError(null);
     setResponse(null);
 
     const startTime = performance.now();
-    const substitutedUrl = substitutePathParams(url, pathParams);
+
+    let finalHeaders = buildHeaders(headers);
+    let finalParams = [...params];
+
+    const authResult = applyAuth(auth, finalHeaders, finalParams);
+    finalHeaders = authResult.headers;
+    finalParams = authResult.params;
+
+    let finalUrl = stringifyParamsToUrl(url, finalParams);
+    finalUrl = substitutePathParams(finalUrl, pathParams);
     let finalResponse: RequestResponse | null = null;
 
     try {
-      const header = buildHeaders(headers);
       const options: RequestInit = {
         method,
-        headers: header,
+        headers: finalHeaders,
       };
       if (['POST', 'PUT', 'PATCH'].includes(method) && body.trim() !== '') {
         options.body = body;
       }
 
-      const res = await fetch(substitutedUrl, options);
+      const res = await fetch(finalUrl, options);
       const responseTime = performance.now() - startTime;
       const responseData = await parseResponseBody(res);
       const parseHeaders = parseResponseHeaders(res.headers);

@@ -64,7 +64,8 @@ export default function Tester() {
       activeTab.body !== saved.body ||
       JSON.stringify(activeTab.params) !== JSON.stringify(saved.params) ||
       JSON.stringify(activeTab.pathParams) !== JSON.stringify(saved.pathParams) ||
-      JSON.stringify(activeTab.headers) !== JSON.stringify(saved.headers)
+      JSON.stringify(activeTab.headers) !== JSON.stringify(saved.headers) ||
+      JSON.stringify(activeTab?.auth) !== JSON.stringify(saved.auth)
     );
   }, [activeTab, savedEndpoints]);
 
@@ -102,6 +103,7 @@ export default function Tester() {
       activeTab.headers,
       activeTab.body,
       addEntry,
+      activeTab.auth,
     );
 
     if (res) {
@@ -123,6 +125,7 @@ export default function Tester() {
           headers: activeTab.headers,
           body: activeTab.body,
           name: activeTab.label || existing.name,
+          auth: activeTab.auth,
         });
         toast.success('Endpoint updated successfully');
         return;

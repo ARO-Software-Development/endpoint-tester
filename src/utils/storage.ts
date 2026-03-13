@@ -13,6 +13,23 @@ export type StatusCategories =
   | 'server-error'
   | 'network-error';
 
+export type AuthMethod =
+  | 'no-auth'
+  | 'api-key'
+  | 'bearer'
+  | 'basic'
+  | 'oauth2'
+  | 'jwt'
+
+export type AuthConfig = {
+  type: AuthMethod,
+  apiKey?: { key: string; value: string; addTo: 'headers' | 'params' }
+  bearer?: { token: string }
+  basic?: { username: string; password: string }
+  oauth2?: { accessToken: string }
+  jwt?: { token: string }
+}
+
 export const STATUS_LABELS: Record<number, string> = {
   200: 'OK',
   201: 'CREATED',
@@ -57,6 +74,7 @@ export type Tab = {
   body: string;
   response?: RequestResponse | null;
   savedId?: string; // Tracks if this tab is linked to a SavedEndpoint
+  auth?: AuthConfig;
 };
 
 export type HistoryEntry = {
@@ -82,6 +100,7 @@ export type SavedEndpoint = {
   pathParams: { key: string; value: string }[];
   headers: { key: string; value: string }[];
   body: string;
+  auth?: AuthConfig;
 };
 
 const TABS_KEY = 'daro_tabs';
