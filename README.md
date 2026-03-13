@@ -2,85 +2,75 @@
 
 A lightweight, browser-based API client (inspired by Postman) for testing RESTful endpoints. Built with speed and simplicity in mind using **Vite** and **pnpm**.
 
-## 🛠️ Current Status: MVP (Minimum Viable Product)
+## 🛠️ Current Status: Beta
 
-This project is currently in active development. The goal is to provide a clean interface for testing common HTTP methods and inspecting real-time responses.
+This project provides a robust interface for testing RESTful APIs with real-time feedback and persistent state.
 
 ### ✅ Supported Features
 
-* **Request Methods:**
-* `GET`: Fetch data from any public or local API.
-* `POST`: Send new data to a server.
-* `PUT`: Update existing resources.
-* `PATCH`: Test partial resource updates.
-* `DELETE`: Verify resource removal.
-
-* **Response Viewer:** Real-time display of the JSON response, including **status codes, response time, and response size**.
-* **Multi-Tab Interface:** Manage multiple requests simultaneously with persistent state.
-* **Request History:** Automatically track and replay previous requests.
-* **Saved Endpoints:** Save and update frequently used API calls.
-* **Editor with Line Numbers:** Improved body editing experience.
+*   **Request Methods:** Full support for `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`.
+*   **Advanced JSON Editor:** High-performance editor with **syntax highlighting**, line numbers, and tab indentation for both request and response bodies.
+*   **Authentication:** Support for multiple auth schemes:
+    *   Bearer Token
+    *   Basic Auth (Username/Password)
+    *   API Key (Header or Query Param)
+    *   JWT & OAuth 2.0 tokens
+*   **Dynamic URLs:** Bidirectional synchronization between URL string, **Query Parameters**, and **Path Variables** (e.g., `:id`).
+*   **Response Viewer:** Detailed inspection of status codes, headers, response time, and payload size.
+*   **Multi-Tab Interface:** Manage multiple independent requests simultaneously.
+*   **Persistence:** All tabs, history, and saved endpoints are persisted via `localStorage`.
+*   **Deployment Ready:** Pre-configured for **Netlify** with SPA routing support (`_redirects`).
 
 ---
 
 ## 📁 Project Structure
 
-The project follows a modular architecture to keep components reusable:
+The project follows a modular architecture:
 
-* `/src/views`: Contains the main Tester dashboard.
-* `/src/components/layout`: Houses the `Header`, `Navbar`, and `Footer`.
-* `/src/components/common`: Contains the `RequestForm`, `MethodSelector`, and `ResponseDisplay`.
+*   `/src/views`: Main page components (Tester, Home, Docs).
+*   `/src/hooks`: Decoupled business logic (Tabs, History, Request, Saved Endpoints).
+*   `/src/components/common`: Reusable UI components (Editor, Panels, Sidebars).
+*   `/src/utils`: Data layer, storage helpers, and URL parsing logic.
 
 ---
 
 ## ⚙️ Development Setup
 
-This project uses **pnpm** for package management. To get started locally:
+This project uses **pnpm** for package management.
 
 1. **Clone the repository:**
 ```bash
 git clone <your-repo-link>
 cd <project-folder>
-
 ```
-
 
 2. **Install dependencies:**
 ```bash
 pnpm install
-
 ```
-
 
 3. **Run the development server:**
 ```bash
 pnpm dev
-
 ```
-
 
 4. **Build for production:**
 ```bash
 pnpm build
-
 ```
-
-
 
 ---
 
 ## 🗺️ Roadmap
 
-* [x] Support for all common HTTP methods (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`).
-* [x] Multi-tab interface with persistent state.
-* [x] Request History (Local Storage) to save and replay previous tests.
-* [x] Saved Endpoints with update/edit capabilities.
-* [x] Response size calculation and display.
-* [x] Editor with line numbers.
-* [ ] Advanced Syntax highlighting for JSON (currently uses line numbers only).
-* [ ] Environment variable support (e.g., `{{baseUrl}}`).
-* [ ] Collections export/import (JSON).
-* [ ] Unit/Integration tests.
+*   [x] Advanced Syntax highlighting for JSON.
+*   [x] Path variable support and URL sync.
+*   [x] Comprehensive Authentication methods.
+*   [x] Persistence and History management.
+*   [ ] Environment variable support (e.g., `{{baseUrl}}`).
+*   [ ] Collections export/import (JSON).
+*   [ ] Unit/Integration tests.
+*   [ ] Schema validation for JSON bodies.
 
 ---
 
@@ -92,10 +82,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 👥 Contributors
 
-A huge thanks to the people who have helped build this tool:
-
 - **@K4** - UI/UX Designer
 - **@SerevrGG** - Front-End Developer
 - **@DazeChr** - Full-Stack Developer
-
----

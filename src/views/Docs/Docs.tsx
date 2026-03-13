@@ -15,31 +15,41 @@ const Documentation = () => {
         </p>
 
         <section className="doc-section">
-          <h2>🛠️ Current Status: MVP (Minimum Viable Product)</h2>
-          <p>This project is currently in active development. The goal is to provide a clean interface for testing common HTTP methods and inspecting real-time responses.</p>
+          <h2>🛠️ Current Status: Beta</h2>
+          <p>This project provides a robust interface for testing RESTful APIs with real-time feedback and persistent state.</p>
           
           <h3>✅ Supported Features</h3>
           <ul className="doc-list">
-            <li><strong>Request Methods:</strong>
+            <li><strong>Full REST Support:</strong> 
+              <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, and <code>DELETE</code>.
+            </li>
+            <li><strong>Advanced JSON Editor:</strong> 
+              Built-in syntax highlighting, line numbers, and tab support for both request and response bodies.
+            </li>
+            <li><strong>Authentication Schemes:</strong>
               <ul className="sub-list">
-                <li><code>GET</code>: Fetch data from any public or local API.</li>
-                <li><code>POST</code>: Send new data to a server.</li>
-                <li><code>PATCH</code>: Test partial resource updates.</li>
-                <li><code>DELETE</code>: Verify resource removal.</li>
+                <li>Bearer Token / JWT / OAuth 2.0</li>
+                <li>Basic Auth (Username/Password)</li>
+                <li>API Key (Header or Query Param)</li>
               </ul>
             </li>
-            <li><strong>Response Viewer:</strong> Real-time display of the JSON response returned by the server.</li>
-            <li><strong>Custom Headers:</strong> (Planned/In-Progress) Ability to add Auth tokens or Content-Type headers.</li>
+            <li><strong>Dynamic URLs:</strong> 
+              Full support for Query Parameters and Path Variables (e.g., <code>:id</code>) with bidirectional synchronization.
+            </li>
+            <li><strong>Persistence & History:</strong>
+              Automatically tracks previous requests and saves multi-tab state using <code>localStorage</code>.
+            </li>
           </ul>
         </section>
 
         <section className="doc-section">
           <h2>📁 Project Structure</h2>
-          <p>The project follows a modular architecture to keep components reusable:</p>
+          <p>The project follows a modular architecture to keep logic decoupled from the UI:</p>
           <ul className="doc-list">
-            <li><code>/src/views</code>: Contains the main Tester dashboard.</li>
-            <li><code>/src/components/layout</code>: Houses the <code>Header</code>, <code>Navbar</code>, and <code>Footer</code>.</li>
-            <li><code>/src/components/common</code>: Contains the <code>RequestForm</code>, <code>MethodSelector</code>, and <code>ResponseDisplay</code>.</li>
+            <li><code>/src/views</code>: Main application pages (Tester, Home, Docs).</li>
+            <li><code>/src/hooks</code>: Core business logic (Tabs, History, Request, Saved Endpoints).</li>
+            <li><code>/src/components/common</code>: Reusable UI components (Editor, Panels, Sidebars).</li>
+            <li><code>/src/utils</code>: Storage helpers, URL parsing, and data layer logic.</li>
           </ul>
         </section>
 
@@ -71,14 +81,13 @@ const Documentation = () => {
         <section className="doc-section">
           <h2>🗺️ Roadmap</h2>
           <ul className="checklist">
-            <li><input type="checkbox" disabled /> Add support for <code>GET</code> requests.</li>
-            <li><input type="checkbox" disabled /> Add support for <code>POST</code> requests.</li>
-            <li><input type="checkbox" disabled /> Add support for <code>PATCH</code> requests.</li>
-            <li><input type="checkbox" disabled /> Add support for <code>DELETE</code> requests.</li>
-            <li><input type="checkbox" disabled /> Add support for <code>PUT</code> requests.</li>
-            <li><input type="checkbox" disabled /> Syntax highlighting for the JSON response body.</li>
-            <li><input type="checkbox" disabled /> Request History (Local Storage) to save previous tests.</li>
+            <li><input type="checkbox" checked disabled /> Support for all REST methods (GET, POST, PUT, PATCH, DELETE).</li>
+            <li><input type="checkbox" checked disabled /> JSON Syntax Highlighting for both request and response.</li>
+            <li><input type="checkbox" checked disabled /> Path Variables and Query Param synchronization.</li>
+            <li><input type="checkbox" checked disabled /> LocalStorage persistence for Tabs and History.</li>
             <li><input type="checkbox" disabled /> Environment variable support (e.g., <code>{`{{baseUrl}}`}</code>).</li>
+            <li><input type="checkbox" disabled /> Export/Import collections (JSON).</li>
+            <li><input type="checkbox" disabled /> Automated Unit/Integration tests.</li>
           </ul>
         </section>
 

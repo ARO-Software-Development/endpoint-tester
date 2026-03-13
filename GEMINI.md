@@ -114,8 +114,14 @@ URL validation is performed in the `Tester` view before executing requests. It r
 }
 ```
 
+## Deployment
+
+The project is configured for deployment on **Netlify**.
+- **SPA Routing:** Includes a `public/_redirects` file to ensure React Router handles all routes correctly (preventing 404s on refresh).
+- **Manual/CD:** Supports both manual deployment via CLI and Continuous Deployment via GitHub.
+
 ## TODOs / Roadmap
-- Syntax highlighting for JSON (current Editor uses vanilla textarea with line numbers).
 - Environment variable support (e.g., `{{baseUrl}}`).
 - Tests (currently no test suite is configured).
 - Export/Import collections.
+- Advanced JSON editor features (auto-completion, schema validation).

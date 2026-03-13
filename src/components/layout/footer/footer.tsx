@@ -13,6 +13,7 @@ const messages: FooterMessage[] = [
     { text: "Visit my GitHub profile for more projects: github.com/karlosg3", url: "https://github.com/karlosg3" },
     { text: "Visit the Bunker Breakfast and Lunch in Hermosillo, Sonora, Mexico for delicious food!" },
     { text: "'Prohibieron los corridos y ahora todos quieren ser un $ad Boy' - DEPR<3$$ED MFKZ", url: "https://open.spotify.com/intl-es/album/3VVqkkiUqVklgPcC4dnYos?si=6LL2M-XiS8eNHTS4vo_sMQ"},
+    { text: "Get the best supplements for your fitness journey in CR Supps", url: "https://www.instagram.com/cr_supps/" }
 ]
 
 export default function Footer() {
